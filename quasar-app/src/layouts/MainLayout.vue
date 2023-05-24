@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header bordered class="bg-primary text-white" height-hint="98">
       <q-toolbar>
         <q-btn
           flat
@@ -12,16 +12,28 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+          </q-avatar>
+          Gen-Composer
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>version v0.0.1</div>
+        <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
+
+      <q-tabs align="center">
+        <q-route-tab to="pages/IndexPage" label="Fiction" />
+        <q-route-tab to="pages/IndexPage" label="Non-Fiction" />
+        <q-route-tab to="pages/IndexPage" label="Presentation" />
+      </q-tabs>
     </q-header>
 
+    /* show-if-above removed wasn't working on initialization */
+<!--
     <q-drawer
       v-model="leftDrawerOpen"
-      show-if-above
+      v-show="leftDrawerOpen"
       bordered
     >
       <q-list>
@@ -37,6 +49,26 @@
           v-bind="link"
         />
       </q-list>
+    </q-drawer>
+-->
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left">
+      <q-list>
+        <q-item-label
+          header
+        >
+          Essential Links
+        </q-item-label>
+
+        <EssentialLink
+          v-for="link in essentialLinks"
+          :key="link.title"
+          v-bind="link"
+        />
+      </q-list>
+    </q-drawer>
+
+    <q-drawer v-model="rightDrawerOpen" side="right" overlay elevated>
+      <!-- drawer content -->
     </q-drawer>
 
     <q-page-container>
@@ -95,8 +127,13 @@ const essentialLinks = [
 ];
 
 const leftDrawerOpen = ref(false)
+const rightDrawerOpen = ref(false)
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+function toggleRightDrawer() {
+  rightDrawerOpen.value = !rightDrawerOpen.value
 }
 </script>

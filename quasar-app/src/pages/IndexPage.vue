@@ -1,42 +1,30 @@
 <template>
   <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
+
+    <outline-editor :sectionData="cDoc.metaData" />
+
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/ExampleComponent.vue';
-import { ref } from 'vue';
+import { ComposerDocument } from 'components/models';
+import { fictionBookTemplate } from 'components/TypesTemplates';
+import OutlineEditor from 'components/OutlineEditor.vue';
+//import { ref } from 'vue';
 
-const todos = ref<Todo[]>([
-  {
-    id: 1,
-    content: 'ct1'
-  },
-  {
-    id: 2,
-    content: 'ct2'
-  },
-  {
-    id: 3,
-    content: 'ct3'
-  },
-  {
-    id: 4,
-    content: 'ct4'
-  },
-  {
-    id: 5,
-    content: 'ct5'
-  }
-]);
-const meta = ref<Meta>({
+const cDoc: ComposerDocument = { ...fictionBookTemplate };
+
+/*
+const sections = ref<Section[]>([
+  { id: '1', title: 'Plot Summary', label: 'Summary', content: 'Test 1', allowsChildren: false },
+  { id: '2', title: 'Setting and Timeline', label: 'Setting', content: 'content of content', allowsChildren: false },
+  { id: '3', title: 'Characters', label: 'Characters', content: 'More', allowsChildren: true },
+  { id: '4', title: 'Writing Style', label: 'Style', content: '', allowsChildren: false },
+  { id: '5', title: 'Length of Book', label: 'Length', content: 'not', allowsChildren: false }
+])
+const meta = ref<Meta2>({
   totalCount: 1200
 });
+*/
+
 </script>
