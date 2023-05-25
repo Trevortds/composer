@@ -22,35 +22,16 @@
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
 
+    <!--
       <q-tabs align="center">
         <q-route-tab to="pages/IndexPage" label="Fiction" />
         <q-route-tab to="pages/IndexPage" label="Non-Fiction" />
         <q-route-tab to="pages/IndexPage" label="Presentation" />
       </q-tabs>
+          -->
     </q-header>
 
-    /* show-if-above removed wasn't working on initialization */
-<!--
-    <q-drawer
-      v-model="leftDrawerOpen"
-      v-show="leftDrawerOpen"
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
 
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
--->
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left">
       <q-list>
         <q-item-label
@@ -67,8 +48,8 @@
       </q-list>
     </q-drawer>
 
-    <q-drawer v-model="rightDrawerOpen" side="right" overlay elevated>
-      <!-- drawer content -->
+    <q-drawer v-model="rightDrawerOpen" side="right" overlay elevated :width="rightDrawWidth">
+       <outline-editor :sectionData="cDoc.metaData" />
     </q-drawer>
 
     <q-page-container>
@@ -80,6 +61,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import EssentialLink from 'components/EssentialLink.vue';
+import { ComposerDocument } from 'components/models';
+import { fictionBookTemplate } from 'components/TypesTemplates';
+import OutlineEditor from 'components/OutlineEditor.vue';
+
+const cDoc: ComposerDocument = { ...fictionBookTemplate };
+
+const rightDrawWidth = ref(1200);
 
 const essentialLinks = [
   {
