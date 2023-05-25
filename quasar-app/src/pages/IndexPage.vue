@@ -1,30 +1,33 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-
-    <outline-editor :sectionData="cDoc.metaData" />
-
+  <q-page class="container">
+    <q-editor v-model="editorDoc" class="fullscreen-editor" />
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { ComposerDocument } from 'components/models';
 import { fictionBookTemplate } from 'components/TypesTemplates';
-import OutlineEditor from 'components/OutlineEditor.vue';
-//import { ref } from 'vue';
+import { ref } from 'vue';
 
-const cDoc: ComposerDocument = { ...fictionBookTemplate };
+const editorDoc = ref('');
 
-/*
-const sections = ref<Section[]>([
-  { id: '1', title: 'Plot Summary', label: 'Summary', content: 'Test 1', allowsChildren: false },
-  { id: '2', title: 'Setting and Timeline', label: 'Setting', content: 'content of content', allowsChildren: false },
-  { id: '3', title: 'Characters', label: 'Characters', content: 'More', allowsChildren: true },
-  { id: '4', title: 'Writing Style', label: 'Style', content: '', allowsChildren: false },
-  { id: '5', title: 'Length of Book', label: 'Length', content: 'not', allowsChildren: false }
-])
-const meta = ref<Meta2>({
-  totalCount: 1200
-});
-*/
 
 </script>
+
+<style>
+.container {
+  height: 90vh; /* Set the height of the container to 100% of the viewport */
+  /* height: 100%; /* Set the height of the container to 100% of the viewport */
+  width: 100%; /* Set the width of the container to 100% */
+}
+
+.fullscreen-editor {
+  position: relative;
+  top: 20px;
+  bottom: 10px;
+  left: 5px;
+  right: 10px;
+  height: 100%; /* Set the height of the editor to 100% of its parent container */
+  width: 100%; /* Set the width of the editor to 100% */
+}
+</style>
