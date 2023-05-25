@@ -8,3 +8,5 @@ const validator = createValidator()
 
 // If we needed some access control, it would get declared here as middleware
 aiRoutes.post("/", controller.processRequest);
+
+aiRoutes.post("/receipts", validator.body(processReceiptValidator), controller.processReceipt);
