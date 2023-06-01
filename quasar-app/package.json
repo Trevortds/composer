@@ -1,8 +1,8 @@
 {
-  "name": "composer",
+  "name": "GhostWriter",
   "version": "0.0.1",
   "description": "A GPT Powered Compositition tool",
-  "productName": "Composer",
+  "productName": "GhostWriter",
   "author": "Trevor Sullivan <Trevortds@users.noreply.github.com>",
   "private": true,
   "scripts": {
@@ -13,6 +13,7 @@
     "build": "quasar build"
   },
   "dependencies": {
+    "@mdi/svg": "^7.2.96",
     "@quasar/extras": "^1.0.0",
     "axios": "^1.2.1",
     "core-js": "^3.6.5",

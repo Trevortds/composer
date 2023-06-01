@@ -21,22 +21,23 @@
         <div class="q-pa-md">
           <q-tree
             :nodes="sectionData"
-            node-key="id"
+
             selected-color="primary"
             v-model:selected="selected"
             default-expand-all
             no-selection-unset
-          />
-          <div v-show="false">Meta is {{ meta.totalCount }}</div>
+          >
+        </q-tree>
         </div>
+
       </template>
     </q-splitter>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Section, Meta2 } from 'components/models';
+import { ref, computed, defineProps } from 'vue';
+import { Section } from 'components/models';
 import SummaryViewEditor from './SummaryViewEditor.vue';
 
 const splitterModel = ref(20);
@@ -45,16 +46,18 @@ const props = defineProps({
   sectionData: {
     type: Array as () => Section[],
     required: true
-  },
-  meta: {
-    type: Meta2,
-    required: false,
-    default: () => ({ totalCount: 100 })
   }
 });
 
 const selected = ref('1');
 
-
+const treeData = computed(() => {
+  return props.sectionData.map(node => {
+    return {
+      ...node,
+      label: `<q-icon name="${node.icon}" class="text-primary" size="md" /> ${node.label}`
+    }
+  })
+});
 
 </script>

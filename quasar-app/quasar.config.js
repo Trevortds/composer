@@ -45,7 +45,7 @@ module.exports = configure(function (ctx) {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      // 'mdi-v5',
+       'mdi-v5',
       // 'fontawesome-v6',
       // 'eva-icons',
       // 'themify',
@@ -144,8 +144,8 @@ module.exports = configure(function (ctx) {
       // chainWebpackCustomSW (/* chain */) {},
 
       manifest: {
-        name: 'Composer',
-        short_name: 'Composer',
+        name: 'Ghost Writer',
+        short_name: 'GWS',
         description: '',
         display: 'standalone',
         orientation: 'portrait',
@@ -211,7 +211,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'composer'
+        appId: 'GhostWriter'
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain

@@ -1,4 +1,4 @@
-# Composer (composer)
+# GhostWriter (GhostWriter)
 
 A GPT Powered Compositition tool
 

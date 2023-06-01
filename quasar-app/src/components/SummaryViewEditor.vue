@@ -1,8 +1,10 @@
+<!-- SummaryViewEditor -->
 <template>
   <div>
-            <q-form action="https://some-url.com" method="post" @submit.prevent="onSubmit">
-              <div v-show="calculatedEmpty || editState" class="q-pa-md" style="max-width: 300px">
-                <p style="font-size: 0.7em; color:darkgray">{{ section.instructions }}</p>
+            <q-form class="q-pa-xl" action="https://some-url.com" method="post" @submit.prevent="onSubmit">
+              <div v-show="calculatedEmpty || editState" class="q-pa-md" style="max-width: 450px">
+                <div class="text-h4" >{{ section.title }}</div>
+                <p style="font-size: 0.9em; color:darkgray">{{ section.instructions }}</p>
                 <q-input
                  v-model="inputContent"
                  filled
@@ -26,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType } from 'vue';
+import { ref, computed, PropType, defineEmits } from 'vue';
 import { Section } from 'components/models';
 
 const props = defineProps({
@@ -36,6 +38,7 @@ const props = defineProps({
   },
 
 });
+const emit = defineEmits(['update-drawer']);
 
 const inputContent = ref(props.section.content);
 
@@ -53,6 +56,7 @@ const save = () => {
 const revert = () => {
   inputContent.value = props.section.content;
   editState.value = false;
+  emit('update-drawer', 'Close'); // emit event here
 };
 
 const edit = () => {
@@ -63,6 +67,15 @@ const onSubmit = (event: Event) => {
   event.preventDefault();
   console.log('submitted');
   editState.value = false;
+  emit('update-drawer', 'Close'); // emit event here
 };
 
 </script>
+
+<style>
+.headline {
+  padding-left: 20px;
+  padding-top: 20px;
+  width: 700px;
+}
+</style>

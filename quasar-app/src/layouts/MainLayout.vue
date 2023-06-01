@@ -1,24 +1,20 @@
+<!-- MainLayout -->
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header bordered class="bg-primary text-white" height-hint="98">
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+            <q-icon name="mdi-ghost-outline" size="2rem" />
           </q-avatar>
-          Gen-Composer
+          Ghost Writer
         </q-toolbar-title>
 
         <div>version v0.0.1</div>
+        <q-btn dense flat round icon="settings" >
+          <SettingsMenu />
+        </q-btn>
+
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
 
@@ -31,25 +27,9 @@
           -->
     </q-header>
 
-
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left">
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
-
-    <q-drawer v-model="rightDrawerOpen" side="right" overlay elevated :width="rightDrawWidth">
-       <outline-editor :sectionData="cDoc.metaData" />
+    <!--  show-if-above -->
+    <q-drawer v-model="rightDrawerOpenAlways" side="right" overlay elevated :width="rightDrawWidth">
+      <IconListNavigator2 :sections="cDoc.metaData" @update-drawer="updateDrawer" />
     </q-drawer>
 
     <q-page-container>
@@ -60,14 +40,52 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import SettingsMenu from 'components/SettingsMenu.vue';
 import EssentialLink from 'components/EssentialLink.vue';
 import { ComposerDocument } from 'components/models';
 import { fictionBookTemplate } from 'components/TypesTemplates';
-import OutlineEditor from 'components/OutlineEditor.vue';
+import IconListNavigator2 from 'components/IconListNavigator2.vue';
 
 const cDoc: ComposerDocument = { ...fictionBookTemplate };
 
 const rightDrawWidth = ref(1200);
+const rightDrawOpenState = ref('New');
+// New
+// Edit
+// Close
+
+const leftDrawerOpen = ref(false)
+const rightDrawerOpen = ref(false)
+const rightDrawerOpenAlways = ref(true)
+
+const useOpenAI = ref(true)
+const useHuggingFaces = ref(false)
+
+const useOpenAIKey = ref('');
+const useHuggingFacesKey = ref('');
+
+
+function toggleLeftDrawer() {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+function updateDrawer(state: string) {
+  rightDrawOpenState.value = state;
+  if (state == 'Close' || state == 'Edit' ) {
+    toggleRightDrawer();
+  }
+  toggleRightDrawer();
+
+}
+
+function toggleRightDrawer() {
+  rightDrawerOpen.value = !rightDrawerOpen.value
+  if (rightDrawerOpen.value) {
+    rightDrawWidth.value = 600;
+  } else {
+    rightDrawWidth.value = 100;
+  }
+}
 
 const essentialLinks = [
   {
@@ -114,14 +132,4 @@ const essentialLinks = [
   }
 ];
 
-const leftDrawerOpen = ref(false)
-const rightDrawerOpen = ref(false)
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
-
-function toggleRightDrawer() {
-  rightDrawerOpen.value = !rightDrawerOpen.value
-}
 </script>
