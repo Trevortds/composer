@@ -1,7 +1,10 @@
+import {DocumentType} from 'common/types/ComposerDocument';
+
 export interface Todo {
   id: number;
   content: string;
 }
+
 
 export interface ComposerDocument {
   id: string;
@@ -9,6 +12,7 @@ export interface ComposerDocument {
   docOutline: Section[];
   title: string;
   author: string; // user.
+  documentType: DocumentType;
 }
 
 export interface Section {

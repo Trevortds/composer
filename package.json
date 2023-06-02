@@ -1,0 +1,5 @@
+{
+  "name": "GhostWriter",
+  "private": true,
+  "workspaces": ["common"]
+}

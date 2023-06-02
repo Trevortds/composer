@@ -7,15 +7,15 @@ todo
  */
 
 class AIRepository {
-    static documentStore = Map<string, object>();
+    static documentStore = new Map<string, object>();
     constructor() {
     }
-    async createDocument(id, document) {
-        this.documentStore.set(id, document);
+    async createDocument(id: string, document: object) {
+        AIRepository.documentStore.set(id, document);
     }
 
-    async getDocument(id) {
-        return this.documentStore.get(id);
+    async getDocument(id: string) {
+        return AIRepository.documentStore.get(id);
     }
 }
 
