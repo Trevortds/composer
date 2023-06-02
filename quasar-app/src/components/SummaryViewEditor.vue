@@ -55,19 +55,15 @@ const save = () => {
 };
 
 const outline = () => {
-  inputContent.value = props.section.content;
-  editState.value = false;
+  //inputContent.value = props.section.content;
+  //editState.value = false;
   emit('outline-book', 'Outline'); // emit event here
 };
 
 const revert = () => {
   inputContent.value = props.section.content;
   editState.value = false;
-  emit('update-drawer', 'Close'); // emit event here
-};
-
-const edit = () => {
-  editState.value = true;
+ // emit('update-drawer', 'Close'); // emit event here
 };
 
 const onSubmit = (event: Event) => {
@@ -75,6 +71,10 @@ const onSubmit = (event: Event) => {
   console.log('submitted');
   editState.value = false;
   emit('update-drawer', 'Close'); // emit event here
+};
+
+const edit = () => {
+  editState.value = true;
 };
 
 </script>
