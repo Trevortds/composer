@@ -57,7 +57,7 @@ function updateDrawer(state: string) {
 
 function updateOutline(state: string) {
   console.log('Update Outline =' + state);
-  emits('update-drawer', state)
+  //Call Store here
 }
 /*
 const sections: Section[] = [
