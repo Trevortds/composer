@@ -20,12 +20,13 @@
         @update-drawer="$emit('update-drawer', $event)"
       />
     </div>
-    <div class="drawer" v-show="!showFullView" :class="{ 'full-view': showFullView }">
+    <div class="drawer"  :class="{ 'full-view': showFullView }">
       <SummaryViewEditor
       :is="currentEditor"
       v-if="selectedSection"
       :section="selectedSection"
-      @update-drawer="updateDrawer" />
+      @update-drawer="updateDrawer"
+      @outline-book="updateOutline" />
     </div>
   </div>
 </template>
@@ -54,6 +55,10 @@ function updateDrawer(state: string) {
   emits('update-drawer', state)
 }
 
+function updateOutline(state: string) {
+  console.log('Update Outline =' + state);
+  emits('update-drawer', state)
+}
 /*
 const sections: Section[] = [
   {

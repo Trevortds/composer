@@ -1,5 +1,5 @@
 
-import { ComposerDocument } from './models';
+import { ComposerDocument, DocumentType } from 'common/src/types/ComposerDocument';
 
 export const fictionBookTemplate: ComposerDocument = {
   id: 'fiction-book-template',
@@ -38,6 +38,7 @@ export const fictionBookTemplate: ComposerDocument = {
   ],
   title: '',
   author: '',
+  documentType: DocumentType.Fiction
 };
 
 /*

@@ -11,7 +11,8 @@
                  type="textarea"/>
 
                  <div class="row justify-end q-gutter-sm " style="padding-top: 10px;">
-                  <q-btn push color="white" text-color="primary" label="Revert" size="xs" @click="revert" />
+                  <q-btn push color="white" text-color="primary" label="Outline" size="xs" @click="outline" />
+                  <q-btn push color="white" text-color="primary" label="Cancel" size="xs" @click="revert" />
                   <q-btn push size-xs color="primary" label="Save" size="xs" @click="save"/>
                 </div>
                </div>
@@ -38,7 +39,7 @@ const props = defineProps({
   },
 
 });
-const emit = defineEmits(['update-drawer']);
+const emit = defineEmits(['update-drawer', 'outline-book']);
 
 const inputContent = ref(props.section.content);
 
@@ -51,6 +52,12 @@ const calculatedEmpty = computed(() => {
 const save = () => {
   //props.section.content = inputContent.value;
   editState.value = false;
+};
+
+const outline = () => {
+  inputContent.value = props.section.content;
+  editState.value = false;
+  emit('outline-book', 'Outline'); // emit event here
 };
 
 const revert = () => {
