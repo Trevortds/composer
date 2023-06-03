@@ -1,8 +1,7 @@
 <!-- IconListNavigator2 -->
 <template>
-  <div class="editor-wrapper">
-    <div class="section-list">
-      <div class="image-wrapper">
+  <div class="col"> <!-- editor-wrapper -->
+    <div class="image-wrapper">
         <q-img
           :src="imgURL"
           alt="Show me the Image"
@@ -10,23 +9,25 @@
           class="image"
         />
       </div>
-
+    <div class="row"> <!-- columnsEdit -->
+      <div class="col"> <!-- section-list -->
       <SectionIconDisplayItem
         v-for="section in sections"
         :key="section.id"
         :section="section"
         :selectedItem="selectedSectionId"
-        @item-click="openDrawer"
-        @update-drawer="$emit('update-drawer', $event)"
+        @item-click="itemSelected"
       />
     </div>
-    <div class="drawer"  :class="{ 'full-view': showFullView }">
+    <div v-show="displayEditor" class="editor-wrapper"> <!-- editors -->
       <SummaryViewEditor
       :is="currentEditor"
       v-if="selectedSection"
       :section="selectedSection"
-      @update-drawer="updateDrawer"
+      @update-editor-state="editorUpdate"
       @outline-book="updateOutline" />
+    </div>
+
     </div>
   </div>
 </template>
@@ -37,9 +38,18 @@ import SectionIconDisplayItem from './SectionIconDisplayItem.vue'; ///Users/dani
 import SummaryViewEditor from './SummaryViewEditor.vue';
 import { Section } from 'components/models';
 
+const selectedSection = ref<Section | null>(null);
+const selectedSectionId = ref<string>('');
+const showFullView = ref(false);
+
 const emits = defineEmits(['item-click', 'update-drawer']); // add 'update-drawer' event
 
 const props = defineProps({
+  drawOpen: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   sections: {
     type: Array as () => Section[],
     required: true
@@ -50,6 +60,30 @@ const props = defineProps({
   }
 });
 
+function itemSelected(section: Section) {
+  console.log('Item Selected =' + section.label);
+  selectedSection.value = section;
+  selectedSectionId.value = section.id;
+  if (!props.drawOpen) {
+    console.log('Time to open the Drawer Open=' + props.drawOpen);
+    emits('update-drawer', 'Open')
+  }
+}
+
+function unSelectItems() {
+  console.log('unSelectItems =' + 'all');
+  selectedSection.value = null;
+  selectedSectionId.value = '';
+}
+
+function editorUpdate(state: string) {
+  console.log('Drawer: editorUpdate  =' + state);
+  if (state == 'Close') {
+    unSelectItems();
+  }
+  emits('update-drawer', state)
+}
+
 function updateDrawer(state: string) {
   console.log('Update Drawer =' + state);
   emits('update-drawer', state)
@@ -59,49 +93,15 @@ function updateOutline(state: string) {
   console.log('Update Outline =' + state);
   //Call Store here
 }
-/*
-const sections: Section[] = [
-  {
-    id: '1',
-    icon: 'icon1',
-    label: 'Section 1',
-    title: 'Section 1 Title',
-    content: 'Section 1 Content',
-    type: 'text',
-    allowsChildren: false
-  },
-  {
-    id: '2',
-    icon: 'icon2',
-    label: 'Section 2',
-    title: 'Section 2 Title',
-    content: 'Section 2 Content',
-    type: 'image',
-    allowsChildren: true,
-    children: [
-      {
-        id: '2-1',
-        label: 'Subsection 1',
-        title: 'Subsection 1 Title',
-        content: 'Subsection 1 Content',
-        type: 'text',
-        allowsChildren: false
-      },
-      {
-        id: '2-2',
-        label: 'Subsection 2',
-        title: 'Subsection 2 Title',
-        content: 'Subsection 2 Content',
-        type: 'image',
-        allowsChildren: false
-      }
-    ]
+
+
+const displayEditor = computed(() => {
+  console.log('Drawer Open Closed =' + props.drawOpen);
+  if (props.drawOpen == true) {
+    return true;
   }
-];
-*/
-const selectedSection = ref<Section | null>(null);
-const selectedSectionId = ref<string>('');
-const showFullView = ref(false);
+  return false;
+});
 
 const currentEditor = computed(() => {
   if (selectedSection.value) {
@@ -132,12 +132,6 @@ function closeDrawer(section: Section) {
 </script>
 
 <style scoped>
-.editor-wrapper {
-  display: flex;
-  flex-direction: row;
-  padding: 0;
-}
-
 .section-list {
   display: flex;
   flex-direction: column;
@@ -151,14 +145,14 @@ function closeDrawer(section: Section) {
 
 .image {
   width: 100%;
-  height: 75px;
+  height: 100px;
 }
 
-.drawer {
-  transition: transform 0.3s;
-  transform: translateX(100%);
+.editor-wrapper {
+ /* transition: transform 0.3s;
+  transform: translateX(100%); */
   width: 100%;
-  max-width: 600px;
+  width: 500px;
 }
 
 .full-view {

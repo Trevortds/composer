@@ -10,9 +10,10 @@
                  filled
                  type="textarea"/>
 
-                 <div class="row justify-end q-gutter-sm " style="padding-top: 10px;">
+                 <div class="row justify-end q-gutter-sm " style="padding-top: 10px; width:100%">
                   <q-btn push color="white" text-color="primary" label="Outline" size="xs" @click="outline" />
-                  <q-btn push color="white" text-color="primary" label="Cancel" size="xs" @click="revert" />
+                  <q-space class="col-auto" />
+                  <q-btn push color="white" text-color="primary" label="Cancel" size="xs" @click="cancel" />
                   <q-btn push size-xs color="primary" label="Save" size="xs" @click="save"/>
                 </div>
                </div>
@@ -39,7 +40,7 @@ const props = defineProps({
   },
 
 });
-const emit = defineEmits(['update-drawer', 'outline-book']);
+const emit = defineEmits(['update-editor-state', 'outline-book']);
 
 const inputContent = ref(props.section.content);
 
@@ -49,28 +50,30 @@ const calculatedEmpty = computed(() => {
   return inputContent.value === '';
 });
 
-const save = () => {
-  //props.section.content = inputContent.value;
-  editState.value = false;
-};
-
 const outline = () => {
   //inputContent.value = props.section.content;
   //editState.value = false;
   emit('outline-book', 'Outline'); // emit event here
 };
 
-const revert = () => {
+
+const save = () => {
+  // Save to Store here or Wire OnSubmit here and then save to store
+  editState.value = false;
+  emit('update-editor-state', 'Close'); // emit event here
+};
+
+const cancel = () => {
   inputContent.value = props.section.content;
   editState.value = false;
- // emit('update-drawer', 'Close'); // emit event here
+  emit('update-editor-state', 'Close'); // emit event here
 };
 
 const onSubmit = (event: Event) => {
   event.preventDefault();
   console.log('submitted');
   editState.value = false;
-  emit('update-drawer', 'Close'); // emit event here
+  emit('update-editor-state', 'Close'); // emit event here
 };
 
 const edit = () => {

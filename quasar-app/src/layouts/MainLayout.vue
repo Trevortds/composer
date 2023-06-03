@@ -29,7 +29,7 @@
 
     <!--  show-if-above -->
     <q-drawer v-model="rightDrawerOpenAlways" side="right" overlay elevated :width="rightDrawWidth">
-      <IconListNavigator2 :sections="cDoc.metaData" @update-drawer="updateDrawer" />
+      <IconListNavigator2 :sections="cDoc.metaData" @update-drawer="updateDrawer" :draw-open="rightDrawerOpen" />
     </q-drawer>
 
     <q-page-container>
@@ -70,9 +70,10 @@ function toggleLeftDrawer() {
 }
 
 function updateDrawer(state: string) {
+  console.log("Update Drawer State="+ state);
   rightDrawOpenState.value = state;
   if (state == 'Close' || state == 'Edit' ) {
-    toggleRightDrawer();
+   // toggleRightDrawer();
   }
   toggleRightDrawer();
 
@@ -83,7 +84,7 @@ function toggleRightDrawer() {
   if (rightDrawerOpen.value) {
     rightDrawWidth.value = 600;
   } else {
-    rightDrawWidth.value = 100;
+    rightDrawWidth.value = 82;
   }
 }
 
