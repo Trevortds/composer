@@ -8,3 +8,6 @@ const validator = createValidator()
 // If we needed some access control, it would get declared here as middleware
 aiRoutes.post("/process", controller.processRequest);
 aiRoutes.post("/", controller.createNewDocument);
+aiRoutes.get("/", controller.getAllDocuments);
+aiRoutes.get("/:id", controller.getDocument);
+aiRoutes.put("/:id", controller.updateDocument);

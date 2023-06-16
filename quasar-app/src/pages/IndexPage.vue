@@ -29,9 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ComposerDocument } from 'components/models';
 import EssentialLink from 'components/EssentialLink.vue';
-import { fictionBookTemplate } from 'components/TypesTemplates';
 import { ref } from 'vue';
 
 const outlineWidth  = ref(200);

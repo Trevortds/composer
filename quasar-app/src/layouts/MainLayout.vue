@@ -42,11 +42,13 @@
 import { ref } from 'vue';
 import SettingsMenu from 'components/SettingsMenu.vue';
 import EssentialLink from 'components/EssentialLink.vue';
-import { ComposerDocument } from 'components/models';
-import { fictionBookTemplate } from 'components/TypesTemplates';
 import IconListNavigator2 from 'components/IconListNavigator2.vue';
+import {useAiDocumentStore} from 'stores/ai-document-store';
+import {ComposerDocument} from 'common';
 
-const cDoc: ComposerDocument = { ...fictionBookTemplate };
+const store = useAiDocumentStore();
+
+const cDoc: ComposerDocument = store.currentDocument as ComposerDocument;
 
 const rightDrawWidth = ref(1200);
 const rightDrawOpenState = ref('New');

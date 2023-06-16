@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(loggerModule("dev"));
 
 app.use("/", indexRoutes);
-app.use("/bot/", aiRoutes)
+app.use("/ai/", aiRoutes)
 
 // @ts-ignore don't need to type this
 app.use((err, req, res, next) => {

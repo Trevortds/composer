@@ -16,6 +16,42 @@ class AiController {
         }
     }
 
+    async getDocument(req: Request, res: Response){
+        try {
+            const docId = req.params.id
+            const result = await aiService.get(docId)
+            console.log(result);
+            res.status(200).send(result)
+        } catch (e) {
+            console.log(e);
+            res.status(500).send({ "error": e })
+        }
+    }
+
+    async getAllDocuments(req: Request, res: Response) {
+        try {
+            const result = await aiService.getAll()
+            console.log(result);
+            res.status(200).send(result);
+        } catch (e) {
+            console.log(e);
+            res.status(500).send({ "error": e })
+        }
+    }
+
+    async updateDocument(req: Request, res: Response){
+        try {
+            const docId = req.params.id
+            const requestData = req.body as ComposerDocument;
+            const result = await aiService.update(docId, requestData)
+            console.log(result);
+            res.status(200).send(result)
+        } catch (e) {
+            console.log(e);
+            res.status(500).send({ "error": e })
+        }
+    }
+
     async processRequest(req: Request, res: Response){
         const requestData = req.body.prompt
         const result = await aiService.process(requestData)
