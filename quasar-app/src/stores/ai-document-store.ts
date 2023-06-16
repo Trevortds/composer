@@ -40,7 +40,7 @@ export const useAiDocumentStore = defineStore('counter', {
       })
     },
     async init() {
-      api.get(`ai/`).then((response: AxiosResponse<Array<ComposerDocument>>) => {
+      return api.get(`ai/`).then((response: AxiosResponse<Array<ComposerDocument>>) => {
         console.log(response);
         this.documentList = response.data;
         this.currentDocument = response.data[0] || fictionBookTemplate;

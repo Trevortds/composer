@@ -11,9 +11,11 @@ const store = useAiDocumentStore();
 const initialized = ref(false);
 store.init()
   .then(() => {
+    console.log("Initialized")
     initialized.value = true;
   })
   .catch((err) => {
+    console.log("failed to initialize")
     console.error(err);
   });
 
