@@ -52,6 +52,20 @@ class AiController {
         }
     }
 
+    async refreshOutline(req: Request, res: Response){
+        try {
+            const docId = req.params.id
+            const requestData = req.body as ComposerDocument;
+            const updatedDocument = await aiService.generateOutline(requestData)
+            const result = await aiService.updateOutline(docId, requestData)
+            console.log(result);
+            res.status(200).send(result)
+        } catch (e) {
+            console.log(e);
+            res.status(500).send({ "error": e })
+        }
+    }
+
     async processRequest(req: Request, res: Response){
         const requestData = req.body.prompt
         const result = await aiService.process(requestData)

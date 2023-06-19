@@ -11,3 +11,8 @@ aiRoutes.post("/", controller.createNewDocument);
 aiRoutes.get("/", controller.getAllDocuments);
 aiRoutes.get("/:id", controller.getDocument);
 aiRoutes.put("/:id", controller.updateDocument);
+aiRoutes.post("/:id/outline", controller.refreshOutline);
+
+// another set of routes for the sections
+
+// aiRoutes.post("/:id/:sectionId", controller.createNewSection); // take in some user provided metadata about the section

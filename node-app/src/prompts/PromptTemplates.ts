@@ -60,6 +60,7 @@ import {PromptTemplate} from 'langchain';
                 "label": "Chapter 1",
                 "title": "Chapter 1",
                 "content": "",
+                "prompt content": "",
                 "type": "textarea",
                 "allowsChildren": true
             }
@@ -71,32 +72,45 @@ import {PromptTemplate} from 'langchain';
 ]
 */
 
-export interface TaskListParserOutput {
+export interface OutlineParserOutput {
     title: string;
     label: string;
     allowsChildren: boolean;
-    instructions: string;
-    tips: string[];
+    content: string;
 }
 
-export const taskListParser = StructuredOutputParser.fromZodSchema(
-    z.array(z.object({
-        title: z.string().describe("The title of the task or piece of document metadata"),
-        label: z.string().describe("The label of the task or piece of document metadata"),
-        allowsChildren: z.boolean().describe("Whether the task or piece of document metadata allows children/subtasks"),
-        instructions: z.string().describe("Instructions for accomplishing the task"),
-        tips: z
-            .array(z.string())
-            .describe("Tips for accomplishing the task"),
-    })).describe("A piece of metadata about the document to be prepared by the user")
+const OutlineParserSectionSchema = z.object({
+    title: z.string().describe("The title of the section of the document to be written"),
+    label: z.string().describe("The label of the section or piece of document"),
+    allowsChildren: z.boolean().describe("Whether the document section can have children (subsections, subheadings, chapters, etc)"),
+    content: z.string().describe("The content of the document section, or a summary of the subsections"),
+});
+
+type Section = z.infer<typeof OutlineParserSectionSchema> & {
+    children: Section[];
+};
+
+const recursiveSectionSchema: z.ZodType<Section> = OutlineParserSectionSchema.extend({
+    children: z.lazy(() => recursiveSectionSchema.array()),
+});
+
+export const OutlineGeneratorParser = StructuredOutputParser.fromZodSchema(
+    z.array(recursiveSectionSchema).describe("A section of the document that the user will have to write")
 );
 
-const taskListFormatInstructions = taskListParser.getFormatInstructions();
+const outlineListFormatInstructions = OutlineGeneratorParser.getFormatInstructions();
 
-export const taskListPrompt = new PromptTemplate({
+/*
+Changpe the input variables to be the metadata items, and the partial variables to be the format instructions,
+make hte llm fill out the outline instead ot fhe metadata
+fetch some stuff from websites/databases when necessary?
+ */
+
+// todo, play with this prompt some more, see if changing the order of elements changes the output
+export const FictionSectionPromptTemplate = new PromptTemplate({
     template:
-        "You are a document writing assistant. Provide a response below in the directed format that fullfills the prompt to follow. \n{format_instructions}\n{question}",
-    inputVariables: ["question"],
-    partialVariables: { format_instructions: taskListFormatInstructions },
+        "You are a document writing assistant, producing a work of fiction. Produce a document outline and fill in the content of that outlne, informed by the following metadata to start. \n{format_instructions}\nSummary: {summary}\nSetting: {setting}\nCharacters: {characters}\nStyle: {style}\nLength: {length}\n Please now take this information and generate a document outline of the story in the specified format, including the final text in the content fields whenever possible. Use the provided length information as a guide for how many sections to produce in the outline and the depth of children. Please provide several hundred tokens of final text in each of the content fields.", //\nOutline: {outline}
+    inputVariables: ["summary", "setting", "characters", "style", "length"],
+    partialVariables: { format_instructions: outlineListFormatInstructions },
 });
 

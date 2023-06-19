@@ -1,5 +1,5 @@
 import {IsString, Length} from "class-validator";
-import {ComposerDocument, Section, DocumentType} from './types/ComposerDocument';
+import {ComposerDocument, Section, DocumentType, blankFictionDocument} from './types/ComposerDocument';
 
 // don't need these now, but they might be useful later. Copied from here: https://leejjon.medium.com/sharing-code-between-frontend-and-backend-in-a-full-stack-typescript-app-1c8711c40304
 // export class ResponseBody {
@@ -20,4 +20,4 @@ import {ComposerDocument, Section, DocumentType} from './types/ComposerDocument'
 //     }
 // }
 
-export { ComposerDocument, Section };
+export { ComposerDocument, Section, blankFictionDocument, DocumentType};

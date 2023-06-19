@@ -1,12 +1,19 @@
 import {HttpError} from "../util/HttpError";
 import {randomUUID} from "crypto";
 import { OpenAI } from "langchain/llms/openai";
-import {getPromptForDocType} from '../prompts/create.prompts';
-import {ComposerDocument} from 'common';
-import {taskListParser, TaskListParserOutput, taskListPrompt} from '../prompts/PromptTemplates';
+import openai from "openai";
+
+import {createFictionPrompt, getPromptForDocType} from '../prompts/create.prompts';
+import {ComposerDocument, Section} from 'common';
 import aiRepository from '../repositories/ai.repository';
 import {OutputFixingParser} from 'langchain/output_parsers';
 import {ChatOpenAI} from 'langchain/chat_models';
+import {
+    OutlineGeneratorParser,
+    OutlineParserOutput
+} from '../prompts/PromptTemplates';
+import {blankFictionDocument} from '../assets/initial.data';
+import {HumanChatMessage} from 'langchain/schema';
 
 const OPENAI_API_KEY=process.env.OPENAI_API_KEY
 
@@ -26,27 +33,68 @@ class AiService {
     }
 
     async create(data: ComposerDocument) {
+
+        // break this out in to a separate function that creates the outline, that outline method can be used separately from document creation
+
         // this is some new stuff
-        const model = new OpenAI({openAIApiKey: OPENAI_API_KEY, temperature: 0.9, maxTokens: 1200});
+        // take the metadatata, put it into the prompt, generate the outline that came from the template
+        // manage templates in common folder
+        // put a stept where if metadata is missing, fill it with some static stuff for now, but in the future we can get it from the llm
 
-        const prompt = getPromptForDocType(data.documentType)
+        const outline = await this.generateOutline(data);
 
-        const input = await taskListPrompt.format({
-            question: prompt,
+        // todo move this so that it's not always a fiction document todo
+        const newDoc = { ...blankFictionDocument(), ...data };
+        newDoc.id = randomUUID();
+        // @ts-ignore
+        newDoc.outline = outline.map((item: Section) => {
+            return {
+                ...item,
+                id: randomUUID(),
+                content: "",
+            }
         });
-        console.log("prompt: \n", input);
+        newDoc.documentType = data.documentType;
+        return await aiRepository.createDocument(newDoc.id, newDoc)
+    }
 
-        const response = await model.call(input);
+    async generateOutline(data: ComposerDocument) {
+        // const model = new OpenAI({modelName: "gpt-35-turbo", openAIApiKey: OPENAI_API_KEY, temperature: 0.9, maxTokens: -1});
 
-        const res = await model.call(prompt);
+        // openai.apiType = "azure";
+        // // # Configure Azure OpenAI Service API
+        // openai.api_type = "azure"
+        // openai.api_version = "2023-03-15-preview"
+        // openai.api_base = os.getenv('OPENAI_API_BASE')
+        // openai.api_key = os.getenv("OPENAI_API_KEY")
+        //
+        // // Init LLM and embeddings model
+        // const model = AzureChatOpenAI(deployment_name="gpt-35-turbo", temperature=0.7, openai_api_version="2023-03-15-preview")
+        const model = new ChatOpenAI();
+        // Pass in a list of messages to `call` to start a conversation. In this simple example, we only pass in one message.
 
-        console.log(typeof res);
-        console.log(res);
+        const prompt = await getPromptForDocType(data.documentType, data)
+        // const response = await chat.call([
+        //     new HumanChatMessage(
+        //         "What is a good name for a company that makes colorful socks?"
+        //     ),
+        // ]);
+        // console.log(response);
 
-        let parsedResponse: Array<TaskListParserOutput>;
+        console.log("prompt: \n", prompt);
+
+        // const response = await model.call(prompt);
+        const response = await model.call([
+                new HumanChatMessage(
+                    prompt
+                ),
+            ]);
+        console.log("response: \n", response.text);
+
+        let parsedResponse: Array<OutlineParserOutput>;
 
         try {
-            parsedResponse = await taskListParser.parse(response);
+            parsedResponse = await OutlineGeneratorParser.parse(response.text);
 
         } catch (e) {
             console.log("Failed to parse bad output: ", e);
@@ -74,26 +122,14 @@ class AiService {
 
             const fixParser = OutputFixingParser.fromLLM(
                 new ChatOpenAI({temperature: 0}),
-                taskListParser
+                OutlineGeneratorParser
             );
-            parsedResponse = await fixParser.parse(response);
+            parsedResponse = await fixParser.parse(response.text);
             console.log("Fixed output: ", parsedResponse);
-            // Fixed output:  { answer: 'foo', sources: [ 'foo.com' ] }
         }
 
         console.log(parsedResponse);
-
-        const id = randomUUID()
-        data.metaData = parsedResponse.map((item) => {
-            return {
-                id: randomUUID(),
-                content: "",
-                ...item
-            }
-        });
-        const newDoc = await aiRepository.createDocument(id, data)
-
-        return newDoc
+        return parsedResponse;
     }
     async process(data: any) {
 
@@ -118,6 +154,34 @@ class AiService {
 
         return res
     }
+
+    async updateOutline(id: string, data: any) {
+        // even though this would work without the check, we should still return 404 if you try to put to a resource that doesn't exist yet
+        // this isn't strictly restful, but I think it's best practice.
+        const doc = await aiRepository.getDocument(id)
+        if (!doc) {
+            throw new HttpError("Document not found", 404);
+        }
+
+        const outline = await this.generateOutline(data);
+
+        // todo move this so that it's not always a fiction document todo
+        const newDoc = { ...data };
+        // @ts-ignore
+        newDoc.outline = outline.map((item: Section) => {
+            return {
+                ...item,
+                id: randomUUID(),
+                content: "",
+            }
+        });
+
+        const res = await aiRepository.updateDocument(id, newDoc)
+
+        return res
+    }
+
+
 }
 
 
