@@ -1,19 +1,29 @@
-import {HttpError} from "../util/HttpError";
+import {HttpError} from "../util/HttpError.js";
 import {randomUUID} from "crypto";
 import { OpenAI } from "langchain/llms/openai";
 import openai from "openai";
+import {
+    ChatPromptTemplate,
+    PromptTemplate,
+    SystemMessagePromptTemplate,
+    AIMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+} from "langchain/prompts";
+import {
+    HumanChatMessage,
+    SystemChatMessage,
+} from "langchain/schema";
 
-import {createFictionPrompt, getPromptForDocType} from '../prompts/create.prompts';
+import {createFictionPrompt, getPromptForDocType} from '../prompts/create.prompts.js';
 import {ComposerDocument, Section} from 'common';
-import aiRepository from '../repositories/ai.repository';
+import aiRepository from '../repositories/ai.repository.js';
 import {OutputFixingParser} from 'langchain/output_parsers';
-import {ChatOpenAI} from 'langchain/chat_models';
+import {ChatOpenAI} from 'langchain/chat_models/openai';
 import {
     OutlineGeneratorParser,
     OutlineParserOutput
-} from '../prompts/PromptTemplates';
-import {blankFictionDocument} from '../assets/initial.data';
-import {HumanChatMessage} from 'langchain/schema';
+} from '../prompts/PromptTemplates.js';
+import {blankFictionDocument} from '../assets/initial.data.js';
 
 const OPENAI_API_KEY=process.env.OPENAI_API_KEY
 
@@ -67,28 +77,59 @@ class AiService {
         // openai.api_version = "2023-03-15-preview"
         // openai.api_base = os.getenv('OPENAI_API_BASE')
         // openai.api_key = os.getenv("OPENAI_API_KEY")
+
+        // furure work: use this to make a chain https://python.langchain.com/docs/use_cases/question_answering/how_to/chat_vector_db
         //
         // // Init LLM and embeddings model
         // const model = AzureChatOpenAI(deployment_name="gpt-35-turbo", temperature=0.7, openai_api_version="2023-03-15-preview")
-        const model = new ChatOpenAI();
+        const model = new ChatOpenAI({modelName:"gpt-4", openAIApiKey: OPENAI_API_KEY, temperature: 0.7, maxTokens: -1});
         // Pass in a list of messages to `call` to start a conversation. In this simple example, we only pass in one message.
+/*
+from langchain.chat_models import ChatOpenAI
+from langchain.llms import OpenAI
+from langchain.schema import (
+    AIMessage,
+    HumanMessage,
+    SystemMessage
+)
 
-        const prompt = await getPromptForDocType(data.documentType, data)
+        question_details = generate_question_details(transcript)
+        sys_prompt, prompt = gen_prompt(row["call reason"], question_details)
+        # print(sys_prompt)
+        # print(prompt)
+        messages = [
+            SystemMessage(content=sys_prompt),
+            HumanMessage(content=prompt)
+        ]
+        evaluator_response = llm(messages).content
+ */
+
+
+        const combinedPrompt = await getPromptForDocType(data.documentType, data)
+        const sysPrompt = combinedPrompt[0];
+        const prompt = combinedPrompt[1];
+        console.log("prompt: \n", prompt);
+
+        const messages = [
+            new SystemChatMessage(sysPrompt),
+            new HumanChatMessage(prompt)
+        ]
+        console.log("messages: \n", messages);
+        const response = await model.call(messages);
         // const response = await chat.call([
         //     new HumanChatMessage(
         //         "What is a good name for a company that makes colorful socks?"
         //     ),
         // ]);
+
         // console.log(response);
 
-        console.log("prompt: \n", prompt);
-
         // const response = await model.call(prompt);
-        const response = await model.call([
-                new HumanChatMessage(
-                    prompt
-                ),
-            ]);
+        // const response = await model.call([
+        //         new HumanChatMessage(
+        //             prompt
+        //         ),
+        //     ]);
         console.log("response: \n", response.text);
 
         let parsedResponse: Array<OutlineParserOutput>;

@@ -1,13 +1,13 @@
 import loggerModule from "morgan";
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
-import { aiRoutes } from "./routes/ai.routes"
+import { aiRoutes } from "./routes/ai.routes.js"
 
 dotenv.config();
 
 // Routes
-import { indexRoutes } from "./routes/index.routes";
-import logger from "./config/logger";
+import { indexRoutes } from "./routes/index.routes.js";
+import logger from "./config/logger.js";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -38,3 +38,4 @@ app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
 
+export default app;

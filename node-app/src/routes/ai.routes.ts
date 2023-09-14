@@ -1,5 +1,5 @@
 import { Router } from "express";
-import controller from "../controllers/ai.controller";
+import controller from "../controllers/ai.controller.js";
 import { createValidator } from 'express-joi-validation'
 
 export const aiRoutes = Router();

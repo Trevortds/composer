@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import {CommaSeparatedListOutputParser, StructuredOutputParser} from 'langchain/output_parsers';
 import {OpenAI} from 'langchain/llms/openai';
-import {PromptTemplate} from 'langchain';
+import {PromptTemplate} from 'langchain/prompts';
 
 /*
 [
@@ -83,7 +83,7 @@ const OutlineParserSectionSchema = z.object({
     title: z.string().describe("The title of the section of the document to be written"),
     label: z.string().describe("The label of the section or piece of document"),
     allowsChildren: z.boolean().describe("Whether the document section can have children (subsections, subheadings, chapters, etc)"),
-    content: z.string().describe("The content of the document section, or a summary of the subsections"),
+    content: z.string().describe("The content of the document section, or a summary of the subsections, if applicable"),
 });
 
 type Section = z.infer<typeof OutlineParserSectionSchema> & {
@@ -95,7 +95,7 @@ const recursiveSectionSchema: z.ZodType<Section> = OutlineParserSectionSchema.ex
 });
 
 export const OutlineGeneratorParser = StructuredOutputParser.fromZodSchema(
-    z.array(recursiveSectionSchema).describe("A section of the document that the user will have to write")
+    z.array(recursiveSectionSchema).describe("A section of the document that is to be written, with children sections if applicable")
 );
 
 const outlineListFormatInstructions = OutlineGeneratorParser.getFormatInstructions();
@@ -109,8 +109,19 @@ fetch some stuff from websites/databases when necessary?
 // todo, play with this prompt some more, see if changing the order of elements changes the output
 export const FictionSectionPromptTemplate = new PromptTemplate({
     template:
-        "You are a document writing assistant, producing a work of fiction. Produce a document outline and fill in the content of that outlne, informed by the following metadata to start. \n{format_instructions}\nSummary: {summary}\nSetting: {setting}\nCharacters: {characters}\nStyle: {style}\nLength: {length}\n Please now take this information and generate a document outline of the story in the specified format, including the final text in the content fields whenever possible. Use the provided length information as a guide for how many sections to produce in the outline and the depth of children. Please provide several hundred tokens of final text in each of the content fields.", //\nOutline: {outline}
+        "You are a document writing assistant, producing a work of fiction. Produce a document outline and fill in the content of that outline, informed by the following metadata to start. \n{format_instructions}\nSummary: {summary}\nSetting: {setting}\nCharacters: {characters}\nStyle: {style}\nLength: {length}\n Please now take this information and generate a document outline of the story in the specified format, including the final text in the content fields whenever possible. Use the provided length information as a guide for how many sections to produce in the outline and the depth of children. Please provide several hundred tokens of final text in each of the content fields.", //\nOutline: {outline}
     inputVariables: ["summary", "setting", "characters", "style", "length"],
     partialVariables: { format_instructions: outlineListFormatInstructions },
 });
 
+
+// todo make another version of this that doesn't rely on a pre-existing resume
+export const ResumeCoverLetterPromptTemplate = new PromptTemplate({
+    template:
+        `You are a document writing assistant, producing a resume and cover letter. Produce a document outline and fill in the content of that outline, informed by the following metadata to start.
+         \n{format_instructions}\nPersonal Description: {personal}\nPrevious Resume: {resume}\nReason for interest in this job: {reason}\nWriting Style Sample: {style}\nJob Description: {description}\n 
+         Please now take this information and generate a document outline of the resume and cover letter in the specified format, including the final text in the content fields whenever possible. 
+         Provide two sections, one titled "Cover Letter" and the other titled "Resume". Make sure the content of the content fields is finalized.`,
+    inputVariables: ["personal", "resume", "reason", "style", "description"],
+    partialVariables: { format_instructions: outlineListFormatInstructions },
+});

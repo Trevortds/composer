@@ -1,7 +1,7 @@
 
 
 import {ComposerDocument} from 'common';
-import {fictionBookTemplate} from '../assets/initial.data';
+import {fictionBookTemplate} from '../assets/initial.data.js';
 
 class AIRepository {
     static documentStore = new Map<string, ComposerDocument>(); // todo make this a file as a stopgap for a real database

@@ -1,19 +1,20 @@
 {
   "compilerOptions": {
     "experimentalDecorators": true,
-    "declaration": true
+    "declaration": true,
+    "target": "es2020",
+    "module": "esnext",
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "moduleResolution": "NodeNext",
+    "lib": [
+      "es2020"
+    ]
   },
-  "include": [
-    "**/*.ts"
-  ],
+  "include": ["src/**/*.ts"],
   "exclude": [
     "node_modules"
-  ],
-  "target": "es2017",
-  "module": "commonjs",
-  "lib": [
-    "es2017"
-  ],
-  "outDir": "./dist/",                                 /* Specify an output folder for all emitted files. */
-  "rootDir": "./src/",                                /* Specify the root folder within your source files. */
+  ]
 }

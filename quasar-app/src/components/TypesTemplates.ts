@@ -1,5 +1,5 @@
 
-import { ComposerDocument, DocumentType } from 'common/src/types/ComposerDocument';
+import { ComposerDocument, DocumentType } from 'common/dist/types/ComposerDocument';
 
 export const fictionBookTemplate: ComposerDocument = {
   id: 'fiction-book-template',

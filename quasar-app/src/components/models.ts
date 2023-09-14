@@ -1,4 +1,4 @@
-import {DocumentType} from 'common/src/types/ComposerDocument';
+import {DocumentType} from 'common/dist/types/ComposerDocument';
 
 export interface Todo {
   id: number;

@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import aiService from "../services/ai.service"
-import { ComposerDocument } from "common/src/types/ComposerDocument";
+import aiService from "../services/ai.service.js"
+import { ComposerDocument } from "common/dist/types/ComposerDocument.js";
 
 class AiController {
 

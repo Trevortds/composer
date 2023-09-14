@@ -1,14 +1,14 @@
-import {ComposerDocument, DocumentType} from 'common/src/types/ComposerDocument';
-import {FictionSectionPromptTemplate} from './PromptTemplates';
+import {ComposerDocument, DocumentType} from 'common/dist/types/ComposerDocument.js';
+import {FictionSectionPromptTemplate, ResumeCoverLetterPromptTemplate} from './PromptTemplates.js';
+import {PromptTemplate} from 'langchain';
 
 export const createFictionPrompt = `
-You have been tasked with helping a user create a work of fiction. The first step of the process is to provide a list
-of document metadata elements to serve as todo items for the user to complete. 
-What are some steps necessary to begin crafting a work of fiction? 
-
-Please be detailed, and provide a wide variety of steps and tips. The provided steps should be actionable, and should
-serve as both a to do list for the user, and a outline for the document to be created.
+You have been tasked with helping a user create a work of fiction. 
 `;
+
+export const createResumePrompt = `
+You have been tasked with helping a user create a resume and a cover letter for a particular job.
+`
 
 const exampleDoc = {
         "id": "fiction-book-template",
@@ -73,29 +73,65 @@ const exampleDoc = {
         "title": "",
         "author": "",
         "documentType": "Fiction"
-    }
+}
 
+ async function getPromptForResumeDoc(document: ComposerDocument) {
+    const promptTemplate = ResumeCoverLetterPromptTemplate;
+    const personal = document.metaData.find(item => item.label === "Personal")?.content || "";
+    const resume = document.metaData.find(item => item.label === "Resume")?.content || "";
+    const reason = document.metaData.find(item => item.label === "Reason")?.content || "";
+    const style = document.metaData.find(item => item.label === "Style")?.content || "";
+    const description = document.metaData.find(item => item.label === "Description")?.content || "";
+    const modelInput = await promptTemplate.format({
+        personal,
+        resume,
+        reason,
+        style,
+        description,
+    });
 
-export async function getPromptForDocType(DocType: DocumentType, document: ComposerDocument) {
+    return modelInput;
+}
+
+async function getPromptForFictionDoc(document: ComposerDocument) {
+    const promptTemplate = FictionSectionPromptTemplate;
+    const summary = document.metaData.find(item => item.label === "Summary")?.content || "";
+    const setting = document.metaData.find(item => item.label === "Setting")?.content || "";
+    const characters = document.metaData.find(item => item.label === "Characters")?.content || "";
+    const style = document.metaData.find(item => item.label === "Style")?.content || "";
+    const length = document.metaData.find(item => item.label === "Length")?.content || "";
+    const modelInput = await promptTemplate.format({
+        summary,
+        setting,
+        characters,
+        style,
+        length,
+    });
+
+    return modelInput;
+}
+
+function getSysPromptForDocType(DocType: DocumentType, document: ComposerDocument): string {
     switch (DocType) {
         case DocumentType.Fiction:
-            const promptTemplate = FictionSectionPromptTemplate;
-            const summary = document.metaData.find(item => item.label === "Summary")?.content || "";
-            const setting = document.metaData.find(item => item.label === "Setting")?.content || "";
-            const characters = document.metaData.find(item => item.label === "Characters")?.content || "";
-            const style = document.metaData.find(item => item.label === "Style")?.content || "";
-            const length = document.metaData.find(item => item.label === "Length")?.content || "";
-            const modelInput = await promptTemplate.format({
-                summary,
-                setting,
-                characters,
-                style,
-                length,
-            });
+            return createFictionPrompt;
+        case DocumentType.ResumeCoverLetter:
+            return createResumePrompt;
+        default:
+            return "You are a document writing assistant";
+    }
+}
 
-            return modelInput;
+export async function getPromptForDocType(DocType: DocumentType, document: ComposerDocument): Promise<[string, string]> {
+    const sysPrompt = getSysPromptForDocType(DocType, document);
+    switch (DocType) {
+        case DocumentType.Fiction:
+            return [sysPrompt, await getPromptForFictionDoc(document)];
+
+        case DocumentType.ResumeCoverLetter:
+            return [sysPrompt, await getPromptForResumeDoc(document)];
 
         default:
-            return createFictionPrompt;
+            return [sysPrompt, createFictionPrompt];
     }
 }
